@@ -1,0 +1,79 @@
+# Business — Generative Engine Optimization Map
+
+---
+
+## Pages
+
+### Home
+https://example.com
+Discover the ultimate royalty free music for YouTube videos, TikTok, films &amp; podcasts. Browse, preview &amp; license tracks instantly — zero copyright headaches, pure creativity.
+
+### Features
+https://example.com/features
+Features | Davita Bros. Sounds. royalty free music for youtube videos
+
+### About
+https://example.com/about
+About | Davita Bros. Sounds. royalty free music for youtube videos
+
+### Contact
+https://example.com/contact
+Contact | Davita Bros. Sounds. royalty free music for youtube videos
+
+### Products
+https://example.com/products
+Our Products - Davita Bros. Sounds
+
+### Cart
+https://example.com/cart
+Your Cart
+
+### Checkout
+https://example.com/checkout
+Checkout
+
+### Login
+https://example.com/login
+Customer Login
+
+### Account
+https://example.com/account
+My Account
+
+### Order Success
+https://example.com/order-success
+Thank you for your order
+
+### Product Detail
+https://example.com/product/:slug
+Product Details - Davita Bros. Sounds
+
+### Category
+https://example.com/category/:slug
+Products - Davita Bros. Sounds
+
+## Legal & Policy
+
+### Privacy Policy
+https://example.com/privacy
+Information about how user data is collected, stored, and protected.
+
+### Terms & Conditions
+https://example.com/terms
+Legal terms describing service usage, rights, and policies.
+
+### Accessibility Statement
+https://example.com/accessibility
+Information about WCAG compliance and accessibility features.
+
+---
+
+# Business Context (for LLM understanding)
+
+## About Business
+---
+
+# Additional Resources
+
+- **Sitemap**: https://example.com/sitemap.xml
+- **Robots.txt**: https://example.com/robots.txt

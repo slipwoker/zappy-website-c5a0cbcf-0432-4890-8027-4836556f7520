@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>About — Davita Bros. Sounds</title>
+    <meta name="description" content="About | Davita Bros. Sounds. royalty free music for youtube videos">
+    <meta name="keywords" content="About, royalty free music for youtube videos, royalty free music for tiktok, free royalty free music for youtube videos, royalty free">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: 'c5a0cbcf-0432-4890-8027-4836556f7520',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="About — Davita Bros. Sounds">
+    <meta property="og:description" content="About | Davita Bros. Sounds. royalty free music for youtube videos">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About — Davita Bros. Sounds">
+    <meta name="twitter:description" content="About | Davita Bros. Sounds. royalty free music for youtube videos">
+    <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: var(--text-dark, #333) !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+      [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 10px !important; padding-right: 28px !important; }
+      .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus (exclude catalog sub-menus that use <a> children instead of <li>) */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))):not(:has(> a)), .sub-menu:not(:has(li)):not(:has(> a)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .navbar .sub-menu.mobile-expanded, .nav-menu .sub-menu.mobile-expanded, #navMenu .sub-menu.mobile-expanded { max-height: none !important; overflow-y: visible !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-light) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-light) !important; white-space: normal !important; }
+        .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+        [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 0 !important; padding-right: 28px !important; }
+        .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+        .nav-menu.active, #navMenu.active { max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-light) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="mobile-lang-menu-deployed-css">
+    @media (max-width: 768px) {
+      .lang-switcher,
+      .nav-cta-container .lang-switcher,
+      .nav-container .lang-switcher,
+      .navbar .lang-switcher,
+      .navbar .nav-cta-container .lang-switcher,
+      .nav-icons-left .lang-switcher,
+      .nav-ecommerce-icons .lang-switcher { display: none !important; }
+      .mobile-lang-menu { width: 100%; border-top: 1px solid rgba(128,128,128,0.2); padding: 8px 0 0 0; margin-top: 8px; }
+      .mobile-lang-toggle { display: flex !important; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: none; border: none; cursor: pointer; font-size: 15px; color: inherit; font-family: inherit; }
+      .mobile-lang-toggle::after { content: ''; display: inline-block; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.3s ease; margin-left: 8px; }
+      .mobile-lang-toggle.expanded::after { transform: rotate(-135deg); }
+      .mobile-lang-options { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+      .mobile-lang-options.expanded { max-height: 300px; }
+      .mobile-lang-option { display: flex !important; align-items: center; gap: 10px; padding: 10px 24px; text-decoration: none; color: inherit; font-size: 14px; font-family: inherit; }
+      .mobile-lang-option:hover { background: rgba(128,128,128,0.1); }
+      .mobile-lang-option.active { font-weight: 600; opacity: 0.7; pointer-events: none; }
+      .mobile-lang-option img { width: 20px; height: 20px; border-radius: 50%; }
+    }
+    @media (min-width: 769px) {
+      .mobile-lang-menu { display: none !important; }
+    }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      #mic-access-tool-general-button, .mic-access-tool-general-button,
+      #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+      ._access-icon, #mic-access-tool-box, .mic-access-tool-box,
+      #mic-init-access-tool #mic-access-tool-box, div[id*="mic-access-tool-box"], ._access-menu {
+        display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
+      }
+    </style>
+</head>
+<body>
+
+
+    <div class="mobile-search-panel" id="mobile-search-panel">
+      <div class="search-wrapper">
+        <input type="text" id="mobile-search-input" placeholder="Search products..." autocomplete="off">
+        <button class="search-submit" id="mobile-search-submit" title="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </button>
+        <button class="close-search" id="close-mobile-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="search-results" id="mobile-search-results"></div>
+    </div>
+  
+<script>window.ZAPPY_WEBSITE_ID = "c5a0cbcf-0432-4890-8027-4836556f7520";window.ZAPPY_API_BASE = (window.location.pathname.includes('/preview') ? "https://api.zappy5.com" : "https://api.zappy5.com");</script>
+  <nav class="navbar">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+
+  <button class="phone-header-btn" data-phone="" aria-label="Call">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/" class="logo-link">
+        <img src="/assets/davita-bros-sounds-music-licensing-digital-media-logo.webp" alt="Davita Bros. Sounds" class="logo" />
+      </a>
+    </div>
+
+    <ul class="nav-menu" id="navMenu">
+
+    <li class="menu-item-has-children zappy-products-dropdown">
+      <a href="/products">
+        Products
+        <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </a>
+      <ul class="sub-menu" id="zappy-nav-category-links">
+        <li><a href="/products">All Products</a></li>
+        <!-- Categories will be loaded dynamically -->
+      </ul>
+    </li>
+  <li><a href="/features">Features</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul><div class="nav-ecommerce-icons nav-icons-left"><a href="/login" class="login-link nav-login" title="Login"><svg class="login-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a><a href="#cart" class="cart-link nav-cart" id="cart-drawer-toggle" title="Cart"><svg class="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="cart-count">0</span></a><div class="nav-search-box">
+    <input type="text" class="nav-search-input" id="nav-search-input" placeholder="Search products..." autocomplete="off">
+    <button class="nav-search-btn" id="nav-search-btn" title="Search">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </button>
+    <div class="nav-search-results" id="nav-search-results"></div>
+  </div></div><div class="nav-ecommerce-icons nav-icons-right"><button class="nav-search-toggle" id="mobile-search-toggle" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button></div>
+
+    
+  </div>
+</nav>
+<script>
+
+// Navbar Mobile Menu Toggle and Contrast Fix
+(function() {
+  // Use 'load' event instead of 'DOMContentLoaded' to ensure we run AFTER all other scripts
+  window.addEventListener('load', function() {
+    
+    // FIX MOBILE BUTTON CONTRAST
+    // Detect navbar background color and apply contrasting color to mobile buttons
+    const navbar = document.querySelector('.navbar, nav, header');
+    if (!navbar) {
+      console.log('[Navbar] Navbar element not found');
+      return;
+    }
+    
+    // DECLARE VARIABLES EARLY to avoid Temporal Dead Zone errors
+    // These are used in multiple places below
+    let mobileToggle = document.getElementById('mobileToggle') ||
+                       document.querySelector('.mobile-toggle') ||
+                       document.querySelector('.hamburger') ||
+                       document.querySelector('.hamburger-menu') ||
+                       document.querySelector('.menu-toggle') ||
+                       document.querySelector('.burger-menu') ||
+                       document.querySelector('[aria-label="Menu"]') ||
+                       document.querySelector('[aria-label="תפריט"]');
+    
+    const phoneBtn = document.querySelector('.phone-header-btn');
+    
+    const computedStyle = window.getComputedStyle(navbar);
+    let bgColor = computedStyle.backgroundColor;
+    
+    console.log('[Navbar] Initial navbar background:', bgColor);
+    
+    // Check if background is transparent or rgba with 0 alpha
+    const isTransparent = bgColor === 'transparent' || 
+                         bgColor === 'rgba(0, 0, 0, 0)' ||
+                         (bgColor.startsWith('rgba') && bgColor.includes(', 0)'));
+    
+    if (isTransparent) {
+      // Check for background-image or gradient
+      const bgImage = computedStyle.backgroundImage;
+      if (bgImage && bgImage !== 'none') {
+        console.log('[Navbar] Navbar has background image/gradient, using dark text');
+        bgColor = 'rgb(240, 240, 240)'; // Assume light background
+      } else {
+        // Transparent navbar - check body background
+        const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+        console.log('[Navbar] Navbar transparent, using body background:', bodyBg);
+        bgColor = bodyBg;
+      }
+    }
+    
+    // Calculate luminance to determine if background is light or dark
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+      const r = parseInt(rgb[0]);
+      const g = parseInt(rgb[1]);
+      const b = parseInt(rgb[2]);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      
+      // Mobile button colors are set by Claude's AI-generated CSS (same as .nav-menu a)
+      // No dynamic color overrides needed - colors come from the generated navbar CSS
+      console.log('[Navbar] Mobile button colors preserved from Claude CSS (luminance:', luminance.toFixed(2) + ')');
+      
+      // FIX ICON SIZES - Ensure SVGs are properly sized and visible
+      // INJECT CRITICAL CSS TO OVERRIDE ANY CONFLICTING RULES
+      const criticalCSS = document.createElement('style');
+      criticalCSS.id = 'zappy-mobile-nav-fix';
+      const htmlLang = document.documentElement.lang || 'en';
+      const htmlDir = document.documentElement.dir || 'ltr';
+      // Check both dir attribute AND lang for RTL detection
+      // dir="rtl" is the most reliable indicator
+      const isRTL = htmlDir === 'rtl' || htmlLang === 'he' || htmlLang === 'ar';
+      
+      criticalCSS.textContent = `
+        /* Hide mobile buttons on desktop, show only on mobile */
+        @media (min-width: 769px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            display: none !important;
+          }
+        }
+        
+        /* Show and position mobile buttons correctly on mobile */
+        @media (max-width: 768px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            position: absolute !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 1001 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 6px !important;
+            background: none !important;
+            color: var(--nav-text, var(--text-light)) !important;
+          }
+          
+          /* LTR positioning (default): hamburger LEFT, phone RIGHT */
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .mobile-toggle,
+          html[dir="ltr"] .mobile-toggle {
+            left: 12px !important;
+            right: auto !important;
+          }
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .phone-header-btn,
+          html[dir="ltr"] .phone-header-btn {
+            right: 12px !important;
+            left: auto !important;
+          }
+          
+          /* RTL positioning: hamburger RIGHT, phone LEFT */
+          html[dir="rtl"] .mobile-toggle,
+          html[lang="he"] .mobile-toggle,
+          html[lang="ar"] .mobile-toggle {
+            right: 12px !important;
+            left: auto !important;
+          }
+          html[dir="rtl"] .phone-header-btn,
+          html[lang="he"] .phone-header-btn,
+          html[lang="ar"] .phone-header-btn {
+            left: 12px !important;
+            right: auto !important;
+          }
+          
+          /* CRITICAL: Ensure nav-container has min-height on mobile */
+          /* All children are positioned absolutely/fixed on mobile, so height:auto collapses to 0 */
+          .nav-container {
+            min-height: 70px !important;
+            position: relative !important;
+          }
+          
+          /* Ensure SVG icons are properly sized and inherit color */
+          .mobile-toggle svg,
+          .phone-header-btn svg {
+            width: 24px !important;
+            height: 24px !important;
+            /* Don't force display - let JavaScript control hamburger/close toggle */
+          }
+          
+          /* Reset nav-cta-container on mobile - remove desktop box-shadow/padding */
+          /* that creates a visible ghost box when CTA button is hidden */
+          .nav-cta-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          
+          /* Hide nav-cta-container entirely on mobile when there's no lang-switcher */
+          /* (only the CTA button is inside, and it's hidden on mobile) */
+          .nav-cta-container:not(:has(.lang-switcher)) {
+            display: none !important;
+          }
+          
+          /* CRITICAL: Prevent hero image fade gradient from bleeding over headline text */
+          /* The .image-fade-gradient has bottom: -30px (extends below parent) */
+          /* On mobile stacked layout, this overlaps the h1 text below the image */
+          .hero-image-column {
+            overflow: hidden !important;
+          }
+          .image-fade-gradient {
+            bottom: 0 !important;
+          }
+          
+          /* Hide desktop language switcher on mobile - hamburger menu handles it */
+          /* High specificity to override stored CSS */
+          .lang-switcher,
+          .nav-cta-container .lang-switcher,
+          .nav-container .lang-switcher,
+          .navbar .lang-switcher,
+          .navbar .nav-cta-container .lang-switcher {
+            display: none !important;
+          }
+        }
+      `;
+      
+      // Remove existing fix if present and inject new one
+      const existing = document.getElementById('zappy-mobile-nav-fix');
+      if (existing) existing.remove();
+      document.head.appendChild(criticalCSS);
+      
+      console.log('[Navbar] Critical CSS injected for mobile nav positioning');
+      
+      // ONLY apply inline positioning styles on mobile viewport
+      // On desktop, the CSS handles hiding these buttons with display: none
+      // Inline styles were breaking desktop layout by overriding CSS
+      const isMobileViewport = window.innerWidth <= 768;
+      
+      if (mobileToggle) {
+        // Icon sizing applies to all viewports for consistency
+        const hamburgerIcon = mobileToggle.querySelector('.hamburger-icon');
+        const closeIcon = mobileToggle.querySelector('.close-icon');
+        
+        if (hamburgerIcon) {
+          hamburgerIcon.style.setProperty('width', '24px', 'important');
+          hamburgerIcon.style.setProperty('height', '24px', 'important');
+          hamburgerIcon.style.setProperty('display', 'block', 'important'); // Show hamburger by default
+        }
+        if (closeIcon) {
+          closeIcon.style.setProperty('width', '24px', 'important');
+          closeIcon.style.setProperty('height', '24px', 'important');
+          closeIcon.style.setProperty('display', 'none', 'important'); // Hide close icon by default
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          mobileToggle.style.setProperty('position', 'absolute', 'important');
+          mobileToggle.style.setProperty('top', '50%', 'important');
+          mobileToggle.style.setProperty('transform', 'translateY(-50%)', 'important');
+          mobileToggle.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          
+          console.log('[Navbar] Mobile toggle positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          mobileToggle.style.removeProperty('position');
+          mobileToggle.style.removeProperty('top');
+          mobileToggle.style.removeProperty('transform');
+          mobileToggle.style.removeProperty('z-index');
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared mobile toggle inline positioning');
+        }
+      }
+      
+      if (phoneBtn) {
+        // Icon sizing applies to all viewports
+        const phoneIcon = phoneBtn.querySelector('svg');
+        if (phoneIcon) {
+          phoneIcon.style.width = '24px';
+          phoneIcon.style.height = '24px';
+          phoneIcon.setAttribute('width', '24');
+          phoneIcon.setAttribute('height', '24');
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          phoneBtn.style.setProperty('position', 'absolute', 'important');
+          phoneBtn.style.setProperty('top', '50%', 'important');
+          phoneBtn.style.setProperty('transform', 'translateY(-50%)', 'important');
+          phoneBtn.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          
+          console.log('[Navbar] Phone button positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          phoneBtn.style.removeProperty('position');
+          phoneBtn.style.removeProperty('top');
+          phoneBtn.style.removeProperty('transform');
+          phoneBtn.style.removeProperty('z-index');
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared phone button inline positioning');
+        }
+      }
+    } else {
+      console.log('[Navbar] Could not parse background color:', bgColor);
+    }
+    
+    // MOBILE MENU TOGGLE
+    // Re-query in case DOM changed (mobileToggle already declared at top of function)
+    mobileToggle = document.getElementById('mobileToggle') ||
+                   document.querySelector('.mobile-toggle') ||
+                   document.querySelector('.hamburger') ||
+                   document.querySelector('.hamburger-menu') ||
+                   document.querySelector('.menu-toggle') ||
+                   document.querySelector('.burger-menu') ||
+                   document.querySelector('[aria-label="Menu"]') ||
+                   document.querySelector('[aria-label="תפריט"]');
+    
+    // EXPANDED SEARCH: Find nav menu by ID or class
+    const navMenu = document.getElementById('navMenu') ||
+                  document.querySelector('.nav-menu') ||
+                  document.querySelector('.nav-links') ||
+                  document.querySelector('nav ul:not(.submenu)');
+    
+    if (!mobileToggle || !navMenu) {
+      console.log('[Navbar] Mobile toggle or menu not found:', { toggle: !!mobileToggle, menu: !!navMenu });
+      return;
+    }
+    
+    // Ensure navMenu has ID for CSS targeting
+    if (!navMenu.id) {
+      navMenu.id = 'navMenu';
+    }
+    
+    console.log('[Navbar] Initializing mobile menu...');
+    
+    // Remove any existing event listeners by cloning the button
+    const newToggle = mobileToggle.cloneNode(true);
+    mobileToggle.parentNode.replaceChild(newToggle, mobileToggle);
+    
+    // Toggle menu on button click - use newToggle now
+    newToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const hamburgerIcon = this.querySelector('.hamburger-icon');
+      const closeIcon = this.querySelector('.close-icon');
+      const isActive = navMenu.classList.contains('active');
+      
+      if (isActive) {
+        // Close menu
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed');
+      } else {
+        // Open menu
+        navMenu.classList.add('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'none', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'block', 'important');
+        document.body.style.overflow = 'hidden';
+        console.log('[Navbar] Menu opened');
+      }
+    });
+    
+    // Close menu when clicking nav links (but NOT dropdown toggles)
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        // Don't close if it's a dropdown child (unless it's a real navigation link)
+        if (this.getAttribute('href') === '#') return;
+        
+        const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+        const closeIcon = newToggle.querySelector('.close-icon');
+        
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed (link clicked)');
+      });
+    });
+    
+    // DROPDOWN MENU TOGGLE (for mobile and touch devices)
+    var dropdownToggles = navMenu.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var parent = this.closest('.nav-dropdown');
+        if (!parent) return;
+        
+        // Close other open dropdowns at the same level
+        var siblings = parent.parentNode.querySelectorAll('.nav-dropdown.open');
+        siblings.forEach(function(sib) {
+          if (sib !== parent) sib.classList.remove('open');
+        });
+        
+        parent.classList.toggle('open');
+        console.log('[Navbar] Dropdown toggled:', parent.classList.contains('open') ? 'open' : 'closed');
+      });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) {
+        var openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+        openDropdowns.forEach(function(dd) { dd.classList.remove('open'); });
+      }
+    });
+    
+    console.log('[Navbar] Dropdown handlers initialized for ' + dropdownToggles.length + ' dropdowns');
+    
+    // Phone button functionality (phoneBtn already declared at top of function)
+    if (phoneBtn) {
+      phoneBtn.addEventListener('click', function() {
+        // Get phone number from placeholder in page or use default
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        const phoneNumber = phoneLinks.length > 0 
+          ? phoneLinks[0].getAttribute('href').replace('tel:', '')
+          : '[business_phone]';
+        
+        window.location.href = 'tel:' + phoneNumber;
+        console.log('[Navbar] Phone button clicked');
+      });
+    }
+    
+    console.log('[Navbar] Mobile menu initialized successfully');
+    
+    // === WHATSAPP BUTTON VISIBILITY FIX ===
+    // Ensure WhatsApp floating button is hidden on desktop and visible on mobile
+    // IMPORTANT: Only target the floating button by its class, NOT generic wa.me links
+    const handleWhatsAppVisibility = function() {
+      const whatsappBtn = document.querySelector('.whatsapp-float');
+      if (whatsappBtn) {
+        const isDesktop = window.innerWidth >= 769;
+        if (isDesktop) {
+          whatsappBtn.style.setProperty('display', 'none', 'important');
+          whatsappBtn.style.setProperty('visibility', 'hidden', 'important');
+          whatsappBtn.style.setProperty('opacity', '0', 'important');
+          whatsappBtn.style.setProperty('pointer-events', 'none', 'important');
+          console.log('[WhatsApp] Button hidden on desktop');
+        } else {
+          whatsappBtn.style.removeProperty('display');
+          whatsappBtn.style.removeProperty('visibility');
+          whatsappBtn.style.removeProperty('opacity');
+          whatsappBtn.style.removeProperty('pointer-events');
+          console.log('[WhatsApp] Button visible on mobile');
+        }
+      }
+    };
+    
+    // Run on load
+    handleWhatsAppVisibility();
+    
+    // Run on resize with debouncing
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleWhatsAppVisibility, 100);
+    });
+  });
+})();
+
+</script>
+  
+  <main>
+    <section class="about-story-section" data-layout-spec="About-story">
+  <!-- Film grain overlay -->
+  <div class="about-story-grain" aria-hidden="true"></div>
+
+  <!-- Waveform decorative overlay -->
+  <div class="about-story-waveform" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="0,60 40,45 60,72 80,38 100,65 120,30 140,70 160,42 180,68 200,35 220,62 240,28 260,75 280,48 300,65 320,32 340,70 360,44 380,60 400,25 420,72 440,40 460,68 480,30 500,65 520,38 540,72 560,44 580,60 600,28 620,68 640,38 660,72 680,42 700,62 720,30 740,70 760,44 780,60 800,35 820,68 840,40 860,72 880,48 900,60 920,28 940,70 960,42 980,65 1000,32 1020,72 1040,44 1060,60 1080,38 1100,68 1120,30 1140,72 1160,48 1200,60" fill="none" stroke="url(#waveGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      <defs>
+        <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#11C8EA" stop-opacity="0.18"></stop>
+          <stop offset="50%" stop-color="#F2046B" stop-opacity="0.14"></stop>
+          <stop offset="100%" stop-color="#11C8EA" stop-opacity="0.10"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="about-story-container">
+    <!-- Left: Narrative Content -->
+    <div class="about-story-content">
+      <!-- Eyebrow label -->
+      <div class="about-story-eyebrow">
+        <span class="about-story-eyebrow-line"></span>
+        <span class="about-story-eyebrow-text">Our Story</span>
+      </div>
+
+      <h1 class="about-story-h1">The Modern Source for Royalty‑Free Music</h1>
+
+      <p class="about-story-body">Davita Bros. Sounds was built for creators who refuse to compromise — filmmakers hunting for the perfect score, video editors who need royalty-free music for YouTube videos that actually lands, podcasters shaping their voice, and social storytellers who know that sound is half the emotion. We built a platform where strong music meets straightforward rights: browse, preview, license, and create without ever worrying about copyright claims or confusing usage terms.</p>
+
+      <!-- Accent divider -->
+      <div class="about-story-divider" aria-hidden="true"></div>
+
+      <!-- H3 brand statement -->
+      <div class="about-story-statement">
+        <h3 class="about-story-h3">Premium sound. Transparent licensing. Built for the way modern media moves.</h3>
+        <p class="about-story-statement-sub">Every track in our catalog is cleared for commercial use — from TikTok content to feature-length film. No hidden fees. No copyright surprises. Just music that elevates your work.</p>
+      </div>
+
+      <!-- CTA -->
+      <a href="/catalog" class="about-story-cta">
+        <span>Explore the Catalog</span>
+        <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+
+    <!-- Right: Cinematic Image -->
+    <figure class="about-story-figure">
+      <!-- Accent frame decorations -->
+      <div class="about-story-frame-corner about-story-frame-tl" aria-hidden="true"></div>
+      <div class="about-story-frame-corner about-story-frame-br" aria-hidden="true"></div>
+
+      <img data-placeholder="about-story-image-1" data-context="Cinematic post-production studio environment: a dark, moody editing suite with multiple glowing monitors displaying audio waveforms and timeline tracks. Dramatic side lighting casts deep shadows across professional mixing equipment, keyboards, and studio monitors. The atmosphere is atmospheric and premium — evoking a high-end music mastering or sound design workspace. Color palette leans deep charcoal, electric cyan glow from screens, and warm amber accent lighting. No people visible — pure environment and atmosphere." width="600" height="820" src="/assets/site-about-story-image-1.webp" alt="Cinematic post-production studio with glowing audio waveforms on mixing monitors">
+
+      <!-- Image overlay gradient -->
+      <div class="about-story-img-overlay" aria-hidden="true"></div>
+
+      <!-- Floating stat badge -->
+      <div class="about-story-badge">
+        <span class="about-story-badge-num">10K+</span>
+        <span class="about-story-badge-label">Licensed Tracks</span>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="about-mission-section" data-layout-spec="About-mission">
+  <div class="about-mission-container">
+
+    <header class="about-mission-header">
+      <p class="about-mission-eyebrow">Our Mission</p>
+      <h2 class="about-mission-title">Why We Built Davita Bros. Sounds</h2>
+      <p class="about-mission-subtitle">We believe every creator deserves music that elevates their work — royalty free, worry free, and built for the way modern content is made.</p>
+    </header>
+
+    <nav class="zappy-catalog-menu ltr" id="zappy-catalog-menu" dir="ltr" style="display:none">
+      <div class="catalog-menu-container">
+        <a href="/products" class="catalog-menu-item catalog-menu-all">All Products</a>
+        <div class="catalog-menu-categories" id="zappy-category-links">
+          <!-- Categories will be loaded dynamically -->
+        </div>
+      </div>
+    </nav>
+  
+
+    <div class="about-mission-pillars">
+
+      <article class="about-mission-pillar">
+        <div class="about-mission-pillar-rule"></div>
+        <h3 class="about-mission-pillar-heading">Elevate<br>Creative Work</h3>
+        <p class="about-mission-pillar-body">Great music transforms good content into something unforgettable. Every track in our library is curated to give filmmakers, video editors, and podcasters the sonic edge their projects deserve — from cinematic scores to high-energy beats that make royalty free music for YouTube videos feel truly premium.</p>
+        <span class="about-mission-pillar-number">01</span>
+      </article>
+
+      <article class="about-mission-pillar">
+        <div class="about-mission-pillar-rule"></div>
+        <h3 class="about-mission-pillar-heading">Remove<br>Licensing Doubt</h3>
+        <p class="about-mission-pillar-body">Copyright strikes and content claims shouldn't stop your creativity. Our clear, straightforward licensing means every track you purchase is yours to use — on YouTube, TikTok, podcasts, and beyond. No grey areas, no hidden clauses, no surprises.</p>
+        <span class="about-mission-pillar-number">02</span>
+      </article>
+
+      <article class="about-mission-pillar">
+        <div class="about-mission-pillar-rule"></div>
+        <h3 class="about-mission-pillar-heading">Music for<br>Every Creator</h3>
+        <p class="about-mission-pillar-body">Whether you're a seasoned filmmaker or just starting your first TikTok channel, quality music should be within reach. We've built a marketplace where professionals and hobbyists alike can browse, preview, and purchase tracks without barriers — because great audio is for everyone.</p>
+        <span class="about-mission-pillar-number">03</span>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="about-values-section" data-layout-spec="About-values">
+  <div class="about-values-grain"></div>
+  <div class="about-values-container">
+    <div class="about-values-header">
+      <span class="about-values-eyebrow">Our Foundation</span>
+      <h2 class="about-values-title">What Drives Every Track We License</h2>
+      <p class="about-values-subtitle">Four principles that shape how we build, curate, and deliver royalty-free music for creators, editors, and digital storytellers worldwide.</p>
+    </div>
+    <div class="about-values-grid">
+      <!-- Card 1: Clarity (wide card, start side) -->
+      <article class="about-values-card about-values-card--wide">
+        <div class="about-values-card-inner">
+          <div class="about-values-card-top">
+            <span class="about-values-gold-dot"></span>
+            <span class="about-values-card-number">01</span>
+          </div>
+          <div class="about-values-icon-wrap">
+            <svg data-element-type="icon" data-icon-type="svg" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="4" y="18" width="32" height="4" rx="2" fill="currentColor" opacity="0.25"></rect>
+              <rect x="4" y="18" width="20" height="4" rx="2" fill="currentColor"></rect>
+              <circle cx="30" cy="20" r="6" stroke="currentColor" stroke-width="2" fill="none"></circle>
+              <circle cx="30" cy="20" r="2" fill="currentColor"></circle>
+            </svg>
+          </div>
+          <h3 class="about-values-card-title">Clarity</h3>
+          <p class="about-values-card-desc">No hidden fees, no copyright surprises. Every license on Davita Bros. Sounds is written in plain language so you know exactly what you're cleared to use — whether you're uploading royalty-free music for YouTube videos, TikTok, a documentary, or a branded podcast. You create; we handle the legal confidence.</p>
+          <div class="about-values-accent-line about-values-accent-line--cyan"></div>
+        </div>
+      </article>
+      <!-- Card 2: Creativity (steps right) -->
+      <article class="about-values-card about-values-card--offset-1">
+        <div class="about-values-card-inner">
+          <div class="about-values-card-top">
+            <span class="about-values-gold-dot"></span>
+            <span class="about-values-card-number">02</span>
+          </div>
+          <div class="about-values-icon-wrap">
+            <svg data-element-type="icon" data-icon-type="svg" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8 28 Q14 10 20 20 Q26 30 32 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"></path>
+              <circle cx="8" cy="28" r="2.5" fill="currentColor"></circle>
+              <circle cx="32" cy="12" r="2.5" fill="currentColor"></circle>
+            </svg>
+          </div>
+          <h3 class="about-values-card-title">Creativity</h3>
+          <p class="about-values-card-desc">Music licensing shouldn't box you in. Our catalog spans cinematic orchestral builds, lo-fi beats, electronic textures, and everything between — curated for the full creative spectrum of digital production. Discover sounds that genuinely move your project forward.</p>
+          <div class="about-values-accent-line about-values-accent-line--magenta"></div>
+        </div>
+      </article>
+      <!-- Card 3: Quality (steps further right) -->
+      <article class="about-values-card about-values-card--offset-2">
+        <div class="about-values-card-inner">
+          <div class="about-values-card-top">
+            <span class="about-values-gold-dot"></span>
+            <span class="about-values-card-number">03</span>
+          </div>
+          <div class="about-values-icon-wrap">
+            <svg data-element-type="icon" data-icon-type="svg" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <polygon points="20,6 24,16 36,16 26,23 30,34 20,27 10,34 14,23 4,16 16,16" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"></polygon>
+              <polygon points="20,11 23,18 31,18 25,22 27,30 20,26 13,30 15,22 9,18 17,18" fill="currentColor" opacity="0.18"></polygon>
+            </svg>
+          </div>
+          <h3 class="about-values-card-title">Quality</h3>
+          <p class="about-values-card-desc">Every track in our library is professionally recorded, mixed, and mastered to broadcast standards. We reject filler. What reaches you has been reviewed for sonic integrity — because your audience deserves production that holds up on any speaker, earphone, or timeline.</p>
+          <div class="about-values-accent-line about-values-accent-line--cyan"></div>
+        </div>
+      </article>
+      <!-- Card 4: Creator Empathy (steps furthest right) -->
+      <article class="about-values-card about-values-card--offset-3">
+        <div class="about-values-card-inner">
+          <div class="about-values-card-top">
+            <span class="about-values-gold-dot"></span>
+            <span class="about-values-card-number">04</span>
+          </div>
+          <div class="about-values-icon-wrap">
+            <svg data-element-type="icon" data-icon-type="svg" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 34 C20 34 6 26 6 16 A8 8 0 0 1 20 12 A8 8 0 0 1 34 16 C34 26 20 34 20 34Z" stroke="currentColor" stroke-width="2" fill="none"></path>
+              <path d="M20 34 C20 34 6 26 6 16 A8 8 0 0 1 20 12 A8 8 0 0 1 34 16 C34 26 20 34 20 34Z" fill="currentColor" opacity="0.12"></path>
+            </svg>
+          </div>
+          <h3 class="about-values-card-title">Creator Empathy</h3>
+          <p class="about-values-card-desc">We built this platform because we've been in your seat — scrambling for the right track before a deadline, worried about a copyright strike killing a video's momentum. Every feature, every filter, every preview tool exists to save you time and protect your work so you can stay in flow.</p>
+          <div class="about-values-accent-line about-values-accent-line--magenta"></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="about-audience-fit-section" data-layout-spec="About-audience-fit">
+  <div class="aaf-container">
+
+    <!-- LEFT: Content -->
+    <div class="aaf-content">
+      <span class="aaf-eyebrow">Who It's For</span>
+      <h2 class="aaf-heading">Built for Every Creator Who Needs Royalty Free Music</h2>
+      <p class="aaf-intro">Whether you're producing royalty free music for YouTube videos, cutting a cinematic short film, dropping TikTok content, launching a podcast, or delivering a branded campaign — Davita Bros. Sounds puts the perfect track in your hands, every time. Content creators, video editors, filmmakers, podcasters, agencies, and passionate hobbyists all find their sound here.</p>
+
+      <div class="aaf-mini-blocks">
+
+        <div class="aaf-mini-card">
+          <div class="aaf-mini-icon">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+          <div class="aaf-mini-body">
+            <h3 class="aaf-mini-title">Fast-Turnaround Content</h3>
+            <p class="aaf-mini-text">Creators and editors working on tight deadlines need tracks they can license instantly. Browse, preview, and download — no negotiations, no copyright strikes, no delays. Your upload schedule stays on track.</p>
+          </div>
+        </div>
+
+        <div class="aaf-mini-card">
+          <div class="aaf-mini-icon">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
+          <div class="aaf-mini-body">
+            <h3 class="aaf-mini-title">Branded Storytelling</h3>
+            <p class="aaf-mini-text">Agencies and brand teams rely on music that elevates narrative without legal risk. Our curated catalogue pairs cinematic depth with clear licensing terms, so every ad, documentary, or social campaign lands with authority.</p>
+          </div>
+        </div>
+
+        <div class="aaf-mini-card">
+          <div class="aaf-mini-icon">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+          </div>
+          <div class="aaf-mini-body">
+            <h3 class="aaf-mini-title">Independent Production</h3>
+            <p class="aaf-mini-text">Indie filmmakers and solo podcasters deserve the same quality soundtrack as studio productions. Flat-rate licensing means you keep full creative control and budget flexibility from pre-production all the way to distribution.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Image Collage -->
+    <div class="aaf-collage" aria-hidden="false">
+      <div class="aaf-collage-inner">
+
+        <!-- Rear peek tile -->
+        <div class="aaf-tile aaf-tile--rear">
+          <img data-placeholder="about-audience-fit-image-3" data-context="A filmmaker reviewing footage on a professional monitor in a dimly lit editing suite, cinematic color grading visible on screen, warm practical lighting, music licensing platform mood" width="320" height="220" src="/assets/site-about-audience-fit-image-3.webp" alt="Filmmaker reviewing footage in an editing suite">
+        </div>
+
+        <!-- Main top tile -->
+        <div class="aaf-tile aaf-tile--top">
+          <img data-placeholder="about-audience-fit-image-1" data-context="A content creator recording a YouTube video at a well-lit home studio desk with ring light, microphone, camera, and laptop showing a video editing timeline, modern and professional setup" width="340" height="230" src="/assets/site-about-audience-fit-image-1.webp" alt="Content creator recording a YouTube video at a home studio desk">
+        </div>
+
+        <!-- Bottom tile -->
+        <div class="aaf-tile aaf-tile--bottom">
+          <img data-placeholder="about-audience-fit-image-2" data-context="A podcaster recording an episode at a professional microphone setup with headphones on, acoustic foam panels visible in background, warm studio lighting, audio waveform visible on laptop screen" width="280" height="190" src="/assets/site-about-audience-fit-image-2.webp" alt="Podcaster recording an episode at a professional microphone setup">
+        </div>
+
+        <!-- Accent line decoration -->
+        <div class="aaf-collage-accent" aria-hidden="true"></div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="about-reviews-section" data-layout-spec="About-reviews">
+  <div class="about-reviews-grain"></div>
+  <div class="about-reviews-container">
+
+    <!-- Section Header -->
+    <div class="about-reviews-header">
+      <span class="about-reviews-label">Client Voices</span>
+      <h2 class="about-reviews-title">Trusted by Creators Worldwide</h2>
+      <p class="about-reviews-subtitle">From royalty-free music for YouTube videos to cinematic film scores — hear what professionals say about licensing with Davita Bros. Sounds.</p>
+    </div>
+
+    <!-- Testimonial Grid -->
+    <div class="about-reviews-grid">
+
+      <!-- Card 1: Video Editor -->
+      <article class="about-reviews-card">
+        <div class="about-reviews-quote-mark" aria-hidden="true">
+          <svg data-no-icon-edit="true" aria-hidden="true" width="36" height="28" viewBox="0 0 36 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 28V17.6C0 14.4 0.666667 11.4667 2 8.8C3.33333 6.13333 5.13333 3.86667 7.4 2L10.8 5.2C8.93333 6.8 7.46667 8.6 6.4 10.6C5.33333 12.6 4.8 14.9333 4.8 17.6H9.6V28H0ZM18.4 28V17.6C18.4 14.4 19.0667 11.4667 20.4 8.8C21.7333 6.13333 23.5333 3.86667 25.8 2L29.2 5.2C27.3333 6.8 25.8667 8.6 24.8 10.6C23.7333 12.6 23.2 14.9333 23.2 17.6H28V28H18.4Z" fill="currentColor"></path>
+          </svg>
+        </div>
+        <blockquote class="about-reviews-quote">
+          <p>I've tried dozens of licensing platforms, but Davita Bros. Sounds is the only one where I feel genuinely confident hitting publish. The tracks are polished, the licensing is crystal clear, and I've never had a single copyright claim across hundreds of videos. It's become an essential part of my post-production workflow.</p>
+        </blockquote>
+        <footer class="about-reviews-meta">
+          <div class="about-reviews-stars" aria-label="5 out of 5 stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="about-reviews-author">
+            <span class="about-reviews-name">Marcus T.</span>
+            <span class="about-reviews-role">Video Editor &amp; YouTube Creator</span>
+          </div>
+        </footer>
+      </article>
+
+      <!-- Card 2: Podcaster -->
+      <article class="about-reviews-card about-reviews-card--featured">
+        <div class="about-reviews-quote-mark" aria-hidden="true">
+          <svg data-no-icon-edit="true" aria-hidden="true" width="36" height="28" viewBox="0 0 36 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 28V17.6C0 14.4 0.666667 11.4667 2 8.8C3.33333 6.13333 5.13333 3.86667 7.4 2L10.8 5.2C8.93333 6.8 7.46667 8.6 6.4 10.6C5.33333 12.6 4.8 14.9333 4.8 17.6H9.6V28H0ZM18.4 28V17.6C18.4 14.4 19.0667 11.4667 20.4 8.8C21.7333 6.13333 23.5333 3.86667 25.8 2L29.2 5.2C27.3333 6.8 25.8667 8.6 24.8 10.6C23.7333 12.6 23.2 14.9333 23.2 17.6H28V28H18.4Z" fill="currentColor"></path>
+          </svg>
+        </div>
+        <blockquote class="about-reviews-quote">
+          <p>The professionalism of every track on this platform is immediately apparent. My podcast went from sounding like a bedroom project to a broadcast-ready show overnight. The ambient and cinematic categories are exceptional — I use Davita Bros. Sounds for every episode intro, transition, and outro without hesitation.</p>
+        </blockquote>
+        <footer class="about-reviews-meta">
+          <div class="about-reviews-stars" aria-label="5 out of 5 stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="about-reviews-author">
+            <span class="about-reviews-name">Priya S.</span>
+            <span class="about-reviews-role">Podcast Producer &amp; Host</span>
+          </div>
+        </footer>
+      </article>
+
+      <!-- Card 3: Filmmaker -->
+      <article class="about-reviews-card">
+        <div class="about-reviews-quote-mark" aria-hidden="true">
+          <svg data-no-icon-edit="true" aria-hidden="true" width="36" height="28" viewBox="0 0 36 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 28V17.6C0 14.4 0.666667 11.4667 2 8.8C3.33333 6.13333 5.13333 3.86667 7.4 2L10.8 5.2C8.93333 6.8 7.46667 8.6 6.4 10.6C5.33333 12.6 4.8 14.9333 4.8 17.6H9.6V28H0ZM18.4 28V17.6C18.4 14.4 19.0667 11.4667 20.4 8.8C21.7333 6.13333 23.5333 3.86667 25.8 2L29.2 5.2C27.3333 6.8 25.8667 8.6 24.8 10.6C23.7333 12.6 23.2 14.9333 23.2 17.6H28V28H18.4Z" fill="currentColor"></path>
+          </svg>
+        </div>
+        <blockquote class="about-reviews-quote">
+          <p>As an independent filmmaker, music licensing used to be a nightmare — until I found Davita Bros. Sounds. The library has genuine cinematic depth: sweeping orchestral pieces, tense ambient textures, emotional piano suites. I've licensed tracks for three short films and a documentary, and the process is seamless every single time.</p>
+        </blockquote>
+        <footer class="about-reviews-meta">
+          <div class="about-reviews-stars" aria-label="5 out of 5 stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="about-reviews-author">
+            <span class="about-reviews-name">Lena K.</span>
+            <span class="about-reviews-role">Independent Filmmaker</span>
+          </div>
+        </footer>
+      </article>
+
+    </div>
+    <!-- End Grid -->
+
+    <!-- Waveform Decoration -->
+    <div class="about-reviews-waveform" aria-hidden="true">
+      <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="30" x2="1200" y2="30" stroke="rgba(255,255,255,0.06)" stroke-width="1"></line>
+        <!-- Waveform bars -->
+        <rect x="0" y="24" width="2" height="12" rx="1" fill="rgba(17,200,234,0.18)"></rect>
+        <rect x="6" y="20" width="2" height="20" rx="1" fill="rgba(17,200,234,0.22)"></rect>
+        <rect x="12" y="16" width="2" height="28" rx="1" fill="rgba(17,200,234,0.28)"></rect>
+        <rect x="18" y="22" width="2" height="16" rx="1" fill="rgba(17,200,234,0.20)"></rect>
+        <rect x="24" y="18" width="2" height="24" rx="1" fill="rgba(17,200,234,0.25)"></rect>
+        <rect x="30" y="26" width="2" height="8" rx="1" fill="rgba(17,200,234,0.15)"></rect>
+        <rect x="36" y="14" width="2" height="32" rx="1" fill="rgba(17,200,234,0.32)"></rect>
+        <rect x="42" y="20" width="2" height="20" rx="1" fill="rgba(17,200,234,0.22)"></rect>
+        <rect x="48" y="25" width="2" height="10" rx="1" fill="rgba(17,200,234,0.16)"></rect>
+        <rect x="54" y="17" width="2" height="26" rx="1" fill="rgba(17,200,234,0.26)"></rect>
+        <rect x="60" y="22" width="2" height="16" rx="1" fill="rgba(17,200,234,0.20)"></rect>
+        <rect x="66" y="12" width="2" height="36" rx="1" fill="rgba(17,200,234,0.35)"></rect>
+        <rect x="72" y="19" width="2" height="22" rx="1" fill="rgba(17,200,234,0.24)"></rect>
+        <rect x="78" y="24" width="2" height="12" rx="1" fill="rgba(17,200,234,0.18)"></rect>
+        <rect x="84" y="16" width="2" height="28" rx="1" fill="rgba(17,200,234,0.28)"></rect>
+        <rect x="90" y="21" width="2" height="18" rx="1" fill="rgba(17,200,234,0.21)"></rect>
+        <rect x="96" y="26" width="2" height="8" rx="1" fill="rgba(17,200,234,0.14)"></rect>
+        <rect x="102" y="15" width="2" height="30" rx="1" fill="rgba(17,200,234,0.30)"></rect>
+        <rect x="108" y="23" width="2" height="14" rx="1" fill="rgba(17,200,234,0.19)"></rect>
+        <rect x="114" y="18" width="2" height="24" rx="1" fill="rgba(17,200,234,0.25)"></rect>
+        <!-- Middle section with magenta accent -->
+        <rect x="540" y="10" width="2" height="40" rx="1" fill="rgba(242,4,107,0.30)"></rect>
+        <rect x="546" y="18" width="2" height="24" rx="1" fill="rgba(242,4,107,0.22)"></rect>
+        <rect x="552" y="14" width="2" height="32" rx="1" fill="rgba(242,4,107,0.28)"></rect>
+        <rect x="558" y="22" width="2" height="16" rx="1" fill="rgba(242,4,107,0.20)"></rect>
+        <rect x="564" y="8" width="2" height="44" rx="1" fill="rgba(242,4,107,0.35)"></rect>
+        <rect x="570" y="16" width="2" height="28" rx="1" fill="rgba(242,4,107,0.26)"></rect>
+        <rect x="576" y="20" width="2" height="20" rx="1" fill="rgba(242,4,107,0.22)"></rect>
+        <rect x="582" y="13" width="2" height="34" rx="1" fill="rgba(242,4,107,0.32)"></rect>
+        <rect x="588" y="19" width="2" height="22" rx="1" fill="rgba(242,4,107,0.24)"></rect>
+        <rect x="594" y="24" width="2" height="12" rx="1" fill="rgba(242,4,107,0.18)"></rect>
+        <rect x="600" y="11" width="2" height="38" rx="1" fill="rgba(242,4,107,0.34)"></rect>
+        <rect x="606" y="17" width="2" height="26" rx="1" fill="rgba(242,4,107,0.27)"></rect>
+        <rect x="612" y="22" width="2" height="16" rx="1" fill="rgba(242,4,107,0.20)"></rect>
+        <rect x="618" y="15" width="2" height="30" rx="1" fill="rgba(242,4,107,0.30)"></rect>
+        <rect x="624" y="21" width="2" height="18" rx="1" fill="rgba(242,4,107,0.22)"></rect>
+        <!-- Right side cyan -->
+        <rect x="1086" y="22" width="2" height="16" rx="1" fill="rgba(17,200,234,0.20)"></rect>
+        <rect x="1092" y="16" width="2" height="28" rx="1" fill="rgba(17,200,234,0.28)"></rect>
+        <rect x="1098" y="13" width="2" height="34" rx="1" fill="rgba(17,200,234,0.32)"></rect>
+        <rect x="1104" y="20" width="2" height="20" rx="1" fill="rgba(17,200,234,0.22)"></rect>
+        <rect x="1110" y="25" width="2" height="10" rx="1" fill="rgba(17,200,234,0.16)"></rect>
+        <rect x="1116" y="17" width="2" height="26" rx="1" fill="rgba(17,200,234,0.26)"></rect>
+        <rect x="1122" y="11" width="2" height="38" rx="1" fill="rgba(17,200,234,0.34)"></rect>
+        <rect x="1128" y="19" width="2" height="22" rx="1" fill="rgba(17,200,234,0.24)"></rect>
+        <rect x="1134" y="24" width="2" height="12" rx="1" fill="rgba(17,200,234,0.18)"></rect>
+        <rect x="1140" y="15" width="2" height="30" rx="1" fill="rgba(17,200,234,0.30)"></rect>
+        <rect x="1146" y="21" width="2" height="18" rx="1" fill="rgba(17,200,234,0.22)"></rect>
+        <rect x="1152" y="26" width="2" height="8" rx="1" fill="rgba(17,200,234,0.14)"></rect>
+        <rect x="1158" y="18" width="2" height="24" rx="1" fill="rgba(17,200,234,0.25)"></rect>
+        <rect x="1164" y="23" width="2" height="14" rx="1" fill="rgba(17,200,234,0.19)"></rect>
+        <rect x="1170" y="20" width="2" height="20" rx="1" fill="rgba(17,200,234,0.22)"></rect>
+        <rect x="1176" y="16" width="2" height="28" rx="1" fill="rgba(17,200,234,0.28)"></rect>
+        <rect x="1182" y="24" width="2" height="12" rx="1" fill="rgba(17,200,234,0.18)"></rect>
+        <rect x="1188" y="19" width="2" height="22" rx="1" fill="rgba(17,200,234,0.24)"></rect>
+        <rect x="1194" y="14" width="2" height="32" rx="1" fill="rgba(17,200,234,0.30)"></rect>
+      </svg>
+    </div>
+
+  </div>
+</section>
+  </main>
+  
+  <footer class="site-footer"><div class="footer-glow-bar"></div><div class="footer-container"><div class="footer-top"><div class="footer-col footer-col--brand"><a href="/" class="footer-logo-link"><img src="/assets/davita-bros-sounds-music-licensing-digital-media-logo.webp" alt="Davita Bros. Sounds" class="logo" /></a><p class="footer-tagline">Premium music licensing for film, content, podcasts, and digital media — crafted with cinematic precision.</p><div class="footer-social"><a href="[facebook_handle]" aria-label="Facebook" class="social-link"><i class="fab fa-facebook-f"></i></a><a href="[instagram_handle]" aria-label="Instagram" class="social-link"><i class="fab fa-instagram"></i></a><a href="[whatsapp_handle]" aria-label="WhatsApp" class="social-link"><i class="fab fa-whatsapp"></i></a></div></div><div class="footer-col footer-col--links"><h4 class="footer-heading"><span class="footer-heading-accent"></span>Quick Links</h4><ul class="footer-nav"><li><a href="/features">Features</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul></div><div class="footer-col footer-col--contact"><h4 class="footer-heading"><span class="footer-heading-accent"></span>Get In Touch</h4><ul class="footer-contact"><li><span class="contact-icon"><i class="fas fa-envelope"></i></span><span class="contact-text"><a href="mailto:[business_email]">[business_email]</a></span></li><li><span class="contact-icon"><i class="fas fa-phone"></i></span><span class="contact-text"><a href="tel:[business_phone]">[business_phone]</a></span></li><li><a href="/"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span class="contact-text">[business_address]</span></a></li></ul></div><div class="footer-col footer-col--license"><h4 class="footer-heading"><span class="footer-heading-accent"></span>Licensing</h4><p class="footer-license-text">Sync licenses available for commercial, editorial, and broadcast use. All tracks cleared for global distribution.</p><div class="footer-badge"><span class="badge-dot"></span>Licenses Available Now</div></div></div><div class="footer-waveform" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polyline points="0,20 30,8 60,28 90,12 120,24 150,6 180,30 210,14 240,22 270,4 300,26 330,16 360,28 390,10 420,20 450,6 480,30 510,14 540,24 570,8 600,20 630,10 660,28 690,14 720,22 750,6 780,26 810,16 840,28 870,10 900,20 930,8 960,30 990,14 1020,24 1050,6 1080,28 1110,16 1140,22 1170,10 1200,20" fill="none" stroke="url(#waveGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></polyline><defs><linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#FF4FA3" stop-opacity="0.15"></stop><stop offset="40%" stop-color="#00D4FF" stop-opacity="0.6"></stop><stop offset="70%" stop-color="#FF4FA3" stop-opacity="0.4"></stop><stop offset="100%" stop-color="#FFC857" stop-opacity="0.2"></stop></linearGradient></defs></svg></div><div class="footer-bottom"><div class="footer-bottom-left"><span class="footer-copyright">© 2026 Davita Bros. Sounds. All rights reserved.</span></div><div class="footer-bottom-right"><nav class="footer-legal" aria-label="Legal"><a href="/privacy">Privacy Policy</a><span class="footer-divider" aria-hidden="true"></span><a href="/terms">Terms &amp; Conditions</a><span class="separator">|</span>
+            <a href="/return-policy" aria-label="Return Policy">
+              Return Policy
+            </a><span class="footer-divider" aria-hidden="true"></span><a href="/accessibility">Accessibility</a></nav><a href="https://zappy5.com" target="_blank" class="zappy-attribution">Generated by Zappy</a></div></div></div></footer>
+  
+  <a href="https://wa.me/[whatsapp_handle]" class="whatsapp-float" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  
+  <div data-integration="accessibility:toolbar"></div>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+
+    <script id="zappy-navbar-scroll-effect">
+    (function(){
+      var nb=document.querySelector('nav.navbar,.navbar:not(.zappy-catalog-menu)');
+      var cm=document.querySelector('.zappy-catalog-menu,#zappy-catalog-menu');
+      if(!nb)return;
+      var fb='rgba(245,244,239,0.85)';
+      var th=60;
+      var rs=getComputedStyle(document.documentElement);
+      var td=rs.getPropertyValue('--text-dark').trim()||'#1a1a1a';
+      var tl=rs.getPropertyValue('--text-light').trim()||'#ffffff';
+      var st=true?td:tl;
+      nb.style.transition='background 0.3s ease,backdrop-filter 0.3s ease,-webkit-backdrop-filter 0.3s ease,box-shadow 0.3s ease';
+      if(cm)cm.style.transition='background 0.3s ease,backdrop-filter 0.3s ease,-webkit-backdrop-filter 0.3s ease';
+      var neSel='a,.navbar-brand,.navbar-brand a,.dropdown-toggle,.mobile-toggle,.phone-header-btn,.mobile-hamburger-btn,.mobile-close-btn,.mobile-submenu-toggle,.nav-link';
+      var skipCls=['cart-link','login-link','nav-search-toggle','search-toggle'];
+      function sTC(c,clr){var els=c.querySelectorAll(neSel);for(var i=0;i<els.length;i++){var sk=false;if(els[i].closest('.sub-menu')||els[i].closest('.dropdown-menu')){sk=true;}for(var j=0;j<skipCls.length;j++){if(els[i].classList.contains(skipCls[j])){sk=true;break;}}if(!sk)els[i].style.setProperty('color',clr,'important');}}
+      function cTC(c){var els=c.querySelectorAll(neSel);for(var i=0;i<els.length;i++){if(els[i].closest('.sub-menu')||els[i].closest('.dropdown-menu'))continue;els[i].style.removeProperty('color');}}
+      function applyScrolled(){
+        nb.classList.add('scrolled');
+        if(window.innerWidth>768){
+          nb.style.setProperty('--frosted-text',st);
+          nb.style.setProperty('background-image','none','important');
+          nb.style.setProperty('background-color',fb,'important');
+          nb.style.backdropFilter='blur(12px)';nb.style.webkitBackdropFilter='blur(12px)';nb.style.boxShadow='0 2px 16px rgba(0,0,0,0.12)';
+          sTC(nb,st);
+        }
+        if(cm){cm.classList.add('scrolled');if(window.innerWidth>768){cm.style.setProperty('background',fb,'important');cm.style.setProperty('backdrop-filter','blur(12px)','important');cm.style.setProperty('-webkit-backdrop-filter','blur(12px)','important');sTC(cm,st);}}
+      }
+      function onS(){
+        if(window._zappyNavNoDarkHero) return;
+        if(window.innerWidth<=768){nb.classList.remove('scrolled');cTC(nb);if(cm){cm.classList.remove('scrolled');cTC(cm);}return;}
+        var y=window.scrollY||window.pageYOffset;
+        if(y>th){
+          nb.classList.add('scrolled');nb.style.setProperty('background-color',fb,'important');nb.style.setProperty('background-image','none','important');
+          nb.style.setProperty('--frosted-text',st);nb.style.backdropFilter='blur(12px)';nb.style.webkitBackdropFilter='blur(12px)';nb.style.boxShadow='0 2px 16px rgba(0,0,0,0.12)';
+          sTC(nb,st);
+          if(cm){cm.classList.add('scrolled');cm.style.setProperty('background',fb,'important');cm.style.setProperty('backdrop-filter','blur(12px)','important');cm.style.setProperty('-webkit-backdrop-filter','blur(12px)','important');sTC(cm,st);}
+        }else{
+          nb.classList.remove('scrolled');nb.style.setProperty('background-color','transparent','important');nb.style.removeProperty('background-image');
+          nb.style.removeProperty('--frosted-text');nb.style.backdropFilter='none';nb.style.webkitBackdropFilter='none';nb.style.boxShadow='none';
+          cTC(nb);
+          if(cm){cm.classList.remove('scrolled');cm.style.setProperty('background','transparent','important');cm.style.setProperty('backdrop-filter','none','important');cm.style.setProperty('-webkit-backdrop-filter','none','important');cTC(cm);}
+        }
+      }
+      function sLum(rv,gv,bv){rv/=255;gv/=255;bv/=255;rv=rv<=0.03928?rv/12.92:Math.pow((rv+0.055)/1.055,2.4);gv=gv<=0.03928?gv/12.92:Math.pow((gv+0.055)/1.055,2.4);bv=bv<=0.03928?bv/12.92:Math.pow((bv+0.055)/1.055,2.4);return 0.2126*rv+0.7152*gv+0.0722*bv;}
+      window.addEventListener('scroll',onS,{passive:true});
+      window.addEventListener('resize',onS,{passive:true});
+      onS();
+      var heroEl=document.querySelector('section[class*="hero"],[data-hero-type],main>section:first-child');
+      var hasDH=false;
+      if(heroEl){var hCs=getComputedStyle(heroEl);var hBI=hCs.backgroundImage;if(hBI&&hBI!=='none'){if(hBI.indexOf('url(')!==-1){var hM2=hCs.backgroundColor.match(/\d+/g);if(hM2&&hM2.length>=3){hasDH=sLum(parseInt(hM2[0]),parseInt(hM2[1]),parseInt(hM2[2]))<0.4;}else{hasDH=true;}}else if(hBI.indexOf('gradient')!==-1){var cM=hBI.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/g);if(cM&&cM.length>0){var tLm=0;for(var ci=0;ci<cM.length;ci++){var pts=cM[ci].match(/\d+/g);tLm+=sLum(parseInt(pts[0]),parseInt(pts[1]),parseInt(pts[2]));}hasDH=(tLm/cM.length)<0.4;}else{hasDH=true;}}else{hasDH=true;}}else{var hM=hCs.backgroundColor.match(/\d+/g);if(hM&&hM.length>=3){hasDH=sLum(parseInt(hM[0]),parseInt(hM[1]),parseInt(hM[2]))<0.4;}}}
+      if(!hasDH){window.removeEventListener('scroll',onS);window.removeEventListener('resize',onS);applyScrolled();window._zappyNavNoDarkHero=true;}
+    })();
+    </script>
+
+    <script id="zappy-mobile-lang-menu-script">
+    (function() {
+      function initMobileLangMenu() {
+        if (window.innerWidth > 768) {
+          var existingMenu = document.querySelector('.mobile-lang-menu');
+          if (existingMenu) existingMenu.remove();
+          return;
+        }
+        if (document.querySelector('.mobile-lang-menu')) return;
+        var switcher = document.querySelector('.lang-switcher');
+        if (!switcher) return;
+        var dropdown = switcher.querySelector('.lang-switcher-dropdown');
+        if (!dropdown) return;
+        var options = dropdown.querySelectorAll('.lang-option');
+        if (options.length === 0) return;
+        var navMenu = document.getElementById('navMenu') || document.querySelector('.nav-menu') || document.querySelector('nav ul');
+        if (!navMenu) return;
+        var currentLang = document.documentElement.lang || 'en';
+        var langConfigs = {
+          he: {name:'עברית',flag:'https://api.iconify.design/circle-flags/il.svg'},
+          en: {name:'English',flag:'https://api.iconify.design/circle-flags/us.svg'},
+          ar: {name:'العربية',flag:'https://api.iconify.design/circle-flags/sa.svg'},
+          fr: {name:'Français',flag:'https://api.iconify.design/circle-flags/fr.svg'},
+          es: {name:'Español',flag:'https://api.iconify.design/circle-flags/es.svg'},
+          de: {name:'Deutsch',flag:'https://api.iconify.design/circle-flags/de.svg'},
+          ru: {name:'Русский',flag:'https://api.iconify.design/circle-flags/ru.svg'},
+          zh: {name:'中文',flag:'https://api.iconify.design/circle-flags/cn.svg'},
+          ja: {name:'日本語',flag:'https://api.iconify.design/circle-flags/jp.svg'},
+          pt: {name:'Português',flag:'https://api.iconify.design/circle-flags/br.svg'},
+          it: {name:'Italiano',flag:'https://api.iconify.design/circle-flags/it.svg'},
+          ko: {name:'한국어',flag:'https://api.iconify.design/circle-flags/kr.svg'}
+        };
+        var container = document.createElement('div');
+        container.className = 'mobile-lang-menu';
+        var currentConfig = langConfigs[currentLang] || {name:currentLang,flag:''};
+        var toggleBtn = document.createElement('button');
+        toggleBtn.className = 'mobile-lang-toggle';
+        toggleBtn.type = 'button';
+        var currentFlagHtml = currentConfig.flag ? '<img src="' + currentConfig.flag + '" width="20" height="20" alt="" style="border-radius:50%;margin-right:8px;margin-left:8px;">' : '';
+        toggleBtn.innerHTML = currentFlagHtml + currentConfig.name;
+        container.appendChild(toggleBtn);
+        var optionsDiv = document.createElement('div');
+        optionsDiv.className = 'mobile-lang-options';
+        var currentLink = document.createElement('a');
+        currentLink.className = 'mobile-lang-option active';
+        currentLink.href = '#';
+        currentLink.innerHTML = currentFlagHtml + currentConfig.name;
+        optionsDiv.appendChild(currentLink);
+        options.forEach(function(opt) {
+          var link = document.createElement('a');
+          link.className = 'mobile-lang-option';
+          link.href = opt.getAttribute('href');
+          link.innerHTML = opt.innerHTML;
+          optionsDiv.appendChild(link);
+        });
+        container.appendChild(optionsDiv);
+        navMenu.appendChild(container);
+        toggleBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleBtn.classList.toggle('expanded');
+          optionsDiv.classList.toggle('expanded');
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileLangMenu); }
+      else { initMobileLangMenu(); }
+      window.addEventListener('resize', function() { clearTimeout(window._mlrt); window._mlrt = setTimeout(initMobileLangMenu, 250); });
+    })();
+    </script>
+</body>
+</html>
